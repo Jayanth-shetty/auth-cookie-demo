@@ -3,7 +3,10 @@ const express = require("express");
 const app = express();
 dotenv.config({ path: "./config.env" });
 require("./db/connection");
-const User = require("./model/userSchema");
+// const User = require("./model/userSchema");
+app.use(express.json());
+const authRouter = require("./router/auth");
+app.use(authRouter);
 const PORT = process.env.PORT;
 
 const middleware = (req, res, next) => {
@@ -27,7 +30,7 @@ app.get("/signin", (req, res) => {
   res.send("hello");
 });
 
-app.get("/signup", (req, res) => {
+app.get("/register", (req, res) => {
   res.send("hello");
 });
 app.listen(PORT, () => {
