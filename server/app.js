@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 dotenv.config({ path: "./config.env" });
 require("./db/connection");
+const User = require("./model/userSchema");
 const PORT = process.env.PORT;
 
 const middleware = (req, res, next) => {
