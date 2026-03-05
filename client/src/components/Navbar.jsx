@@ -1,37 +1,61 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
-  console.log("hiii");
   return (
     <nav className={styles.navbar}>
       <div className={styles.logo}>
-        <Link to="/">Home</Link>
+        <NavLink to="/">Home</NavLink>
       </div>
 
       <ul className={styles.navLinks}>
         <li>
-          <Link to="/">Home</Link>
+          <NavLink
+            to="/"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
+            Home
+          </NavLink>
         </li>
 
         <li>
-          <Link to="/about">About</Link>
+          <NavLink
+            to="/about"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
+            About
+          </NavLink>
         </li>
 
         <li>
-          <Link to="/contact">Contact</Link>
+          <NavLink
+            to="/contact"
+            className={({ isActive }) => (isActive ? styles.active : "")}
+          >
+            Contact
+          </NavLink>
         </li>
 
         <li>
-          <Link to="/login" className={styles.login}>
+          <NavLink
+            to="/login"
+            className={({ isActive }) =>
+              isActive ? `${styles.login} ${styles.active}` : styles.login
+            }
+          >
             Login
-          </Link>
+          </NavLink>
         </li>
 
         <li>
-          <Link to="/signup" className={styles.signup}>
+          <NavLink
+            to="/signup"
+            className={({ isActive }) =>
+              isActive ? `${styles.signup} ${styles.active}` : styles.signup
+            }
+          >
             Signup
-          </Link>
+          </NavLink>
         </li>
       </ul>
     </nav>
