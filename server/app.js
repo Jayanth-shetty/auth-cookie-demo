@@ -11,18 +11,18 @@ const authRouter = require("./router/auth");
 app.use(authRouter);
 const PORT = process.env.PORT;
 
-const middleware = (req, res, next) => {
-  console.log("hello middleware");
-  next();
-};
+// const middleware = (req, res, next) => {
+//   console.log("hello middleware");
+//   next();
+// };
 
 app.get("/", (req, res) => {
   res.send("hello");
 });
 
-app.get("/about", middleware, (req, res) => {
-  res.send("hello");
-});
+// app.get("/about", middleware, (req, res) => {
+//   res.send("hello");
+// });
 
 app.get("/contact", (req, res) => {
   res.cookie("test", "jai");

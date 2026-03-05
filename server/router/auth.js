@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 require("../db/connection");
 const User = require("../model/userSchema");
+const authenticate = require("../middleware/authenticate");
 
 router.get("/", (req, res) => {
   res.send("hello from router");
@@ -73,5 +74,11 @@ router.post("/signin", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+});
+
+//about ko idhar
+router.get("/about", authenticate, (req, res) => {
+  res.send("hello");
+  res.send(req.rootUser);
 });
 module.exports = router;
