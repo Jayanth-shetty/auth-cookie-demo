@@ -4,8 +4,16 @@ const app = express();
 const cors = require("cors");
 dotenv.config({ path: "./config.env" });
 require("./db/connection");
+const cookieParser = require("cookie-parser");
+
+app.use(cookieParser());
 // const User = require("./model/userSchema");
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // your frontend URL
+    credentials: true, // allow cookies to be sent
+  }),
+);
 app.use(express.json());
 const authRouter = require("./router/auth");
 app.use(authRouter);

@@ -3,7 +3,7 @@ const User = require("../model/userSchema");
 const { request } = require("express");
 const authenticate = async (req, res, next) => {
   try {
-    const token = request.cookies.jwtoken;
+    const token = req.cookies.jwtoken;
     const verifyToken = jwt.verify(token, process.env.SECRET_KEY);
     const rootUser = await User.findOne({
       _id: verifyToken._id,
@@ -17,7 +17,7 @@ const authenticate = async (req, res, next) => {
     req.userID = rootUser._id;
     next();
   } catch (err) {
-    res.status(401).send("unAutherized:no token provided");
+    return res.status(401).json({ error: "Unauthorized" });
     console.log(err);
   }
 };

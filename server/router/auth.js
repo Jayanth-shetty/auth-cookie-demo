@@ -78,7 +78,6 @@ router.post("/signin", async (req, res) => {
 
 //about ko idhar
 router.get("/about", authenticate, (req, res) => {
-  res.send("hello");
-  res.send(req.rootUser);
+  res.status(200).json(req.rootUser);
 });
 module.exports = router;

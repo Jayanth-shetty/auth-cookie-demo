@@ -13,10 +13,11 @@ export default function Login() {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
-    const data = res.json();
-    if (data.status === 400 || !data) {
+    const data = await res.json();
+    if (res.status === 400 || !data) {
       window.alert("Invalid credintials");
     } else {
       window.alert("login successfull");
