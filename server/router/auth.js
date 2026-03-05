@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
 require("../db/connection");
@@ -52,7 +54,22 @@ router.post("/signin", async (req, res) => {
       return res.status(400).json({ error: "invaild data please fill" });
     }
     const userLogin = await User.findOne({ email });
-    res.json({ message: "signin successfully" });
+    if (userLogin) {
+      const isMatch = await bcrypt.compare(password, userLogin.password);
+      const token = await userLogin.generateAuthToken();
+      console.log(token);
+      res.cookie("jwtoken", token, {
+        expires: new Date(Date.now() + 25892000000),
+        httpOnly: true,
+      });
+      if (!isMatch) {
+        return res.status(400).json({ error: "invalid crendtials" });
+      } else {
+        res.json({ message: "signin successfully" });
+      }
+    } else {
+      return res.status(400).json({ error: "invalid crendtials" });
+    }
   } catch (err) {
     console.log(err);
   }

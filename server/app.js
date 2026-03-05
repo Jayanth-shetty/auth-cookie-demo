@@ -1,9 +1,11 @@
 const dotenv = require("dotenv");
 const express = require("express");
 const app = express();
+const cors = require("cors");
 dotenv.config({ path: "./config.env" });
 require("./db/connection");
 // const User = require("./model/userSchema");
+app.use(cors());
 app.use(express.json());
 const authRouter = require("./router/auth");
 app.use(authRouter);
@@ -23,6 +25,7 @@ app.get("/about", middleware, (req, res) => {
 });
 
 app.get("/contact", (req, res) => {
+  res.cookie("test", "jai");
   res.send("hello");
 });
 
