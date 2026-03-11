@@ -23,10 +23,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  cpassword: {
-    type: String,
-    required: true,
-  },
   tokens: [{ token: { type: String, required: true } }],
 });
 
@@ -35,7 +31,6 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", async function () {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 12);
-    this.cpassword = await bcrypt.hash(this.cpassword, 12);
   }
 });
 

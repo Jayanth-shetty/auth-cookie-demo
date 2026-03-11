@@ -18,10 +18,14 @@ export default function Login() {
     });
     const data = await res.json();
     if (res.status === 400 || !data) {
-      window.alert("Invalid credintials");
+      window.alert("Invalid credentials");
     } else {
-      window.alert("login successfull");
-      navigate("/");
+      // Store token in localStorage for SSO
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+      window.alert("Login successful!");
+      navigate("/", { state: { token: data.token } });
     }
   };
   return (

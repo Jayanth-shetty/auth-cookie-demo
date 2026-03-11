@@ -1,32 +1,43 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // src/pages/About.jsx
 export default function About() {
   const navigate = useNavigate();
-  const data = {
-    name: "Jayanth BB",
-    email: "jayanth@example.com",
-    phone: "9876543210",
-    profession: "Full stack Developer",
-  };
+  const [userData, setUserData] = useState(null);
+
   const callAboutPage = async () => {
     try {
-      const res = await fetch("http://localhost:5000/about", {
+      // Get token from localStorage (fallback if not in localStorage, cookie will be used)
+      const token = localStorage.getItem("token");
+
+      const headers = {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      };
+
+      // Always include Authorization header if token exists
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      // Send request with both cookie + Authorization header for maximum compatibility
+      const res = await fetch("http://localhost:5000/check-auth", {
         method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
+        headers: headers,
+        credentials: "include", // Also sends cookie if available
       });
-      const data = await res.json();
-      console.log(data);
-      if (res.status !== 200) {
-        const error = new Error(res.error);
-        throw error;
+
+      const responseData = await res.json();
+      console.log("Auth response:", responseData);
+
+      if (res.status === 200) {
+        setUserData(responseData.user);
+      } else {
+        console.log("Auth failed:", responseData);
+        navigate("/login");
       }
     } catch (err) {
-      console.log(err);
+      console.log("Error:", err);
       navigate("/login");
     }
   };
@@ -39,18 +50,24 @@ export default function About() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
       <h1 className="text-3xl font-bold mb-6">About Me</h1>
       <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md space-y-4">
-        <p>
-          <strong>Name:</strong> {data.name}
-        </p>
-        <p>
-          <strong>Email:</strong> {data.email}
-        </p>
-        <p>
-          <strong>Phone:</strong> {data.phone}
-        </p>
-        <p>
-          <strong>Profession:</strong> {data.profession}
-        </p>
+        {userData ? (
+          <>
+            <p>
+              <strong>Name:</strong> {userData.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {userData.email}
+            </p>
+            <p>
+              <strong>Phone:</strong> {userData.phone}
+            </p>
+            <p>
+              <strong>Profession:</strong> {userData.work}
+            </p>
+          </>
+        ) : (
+          <p>Loading your profile...</p>
+        )}
       </div>
     </div>
   );

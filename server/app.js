@@ -8,10 +8,35 @@ const cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
 // const User = require("./model/userSchema");
+
+// SSO Support - Allow multiple subdomain origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost:5174",
+  "http://localhost:3001",
+  /^http:\/\/([\w-]+\.)*localhost(:\d+)?$/, // Match localhost and *.localhost on any port
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173", // your frontend URL
-    credentials: true, // allow cookies to be sent
+    origin: (origin, callback) => {
+      // For development/localhost, accept all localhost-based origins
+      const isLocalhost = origin && origin.includes("localhost");
+      const isAllowedOrigin = allowedOrigins.some((allowedOrigin) => {
+        if (allowedOrigin instanceof RegExp) {
+          return allowedOrigin.test(origin);
+        }
+        return allowedOrigin === origin;
+      });
+
+      if (isLocalhost || isAllowedOrigin || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
   }),
 );
 app.use(express.json());
@@ -44,7 +69,7 @@ app.get("/signin", (req, res) => {
 app.get("/register", (req, res) => {
   res.send("hello");
 });
-// app.listen(PORT, () => {
-//   console.log(`server running on port ${PORT}`);
-// });
+app.listen(PORT, () => {
+  console.log(`server running on port ${PORT}`);
+});
 module.exports = app;
