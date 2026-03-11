@@ -57,6 +57,16 @@ export default function Navbar() {
             Signup
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/logout"
+            className={({ isActive }) =>
+              isActive ? `${styles.logout} ${styles.active}` : styles.logout
+            }
+          >
+            Logout
+          </NavLink>
+        </li>
       </ul>
     </nav>
   );

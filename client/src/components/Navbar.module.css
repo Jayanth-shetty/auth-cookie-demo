@@ -53,3 +53,15 @@
     font-weight: bold;
     border-bottom: 2px solid #38bdf8;
 }
+
+.logout {
+    background-color: #38bdf8;
+    padding: 6px 12px;
+    border-radius: 5px;
+    color: black !important;
+    font-weight: 600;
+}
+
+.logout:hover {
+    background-color: #0ea5e9;
+}
