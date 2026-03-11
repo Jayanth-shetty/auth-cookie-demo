@@ -44,7 +44,7 @@ app.get("/signin", (req, res) => {
 app.get("/register", (req, res) => {
   res.send("hello");
 });
-app.listen(PORT, () => {
-  console.log(`server running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`server running on port ${PORT}`);
+// });
 module.exports = app;
