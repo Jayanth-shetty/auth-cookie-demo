@@ -7,18 +7,49 @@ export default function Logout() {
   useEffect(() => {
     const handleLogout = async () => {
       try {
-        // Clear token from localStorage (works across all subdomains)
-        localStorage.removeItem("token");
+        // Get token from localStorage
+        const token = localStorage.getItem("token");
+        console.log("Logout: Starting logout process");
+        console.log("Token in localStorage:", token ? "exists" : "missing");
 
-        // Call backend logout endpoint to clear cookie
-        await fetch("http://localhost:5000/logout", {
-          method: "GET",
-          credentials: "include",
+        const headers = {
+          "Content-Type": "application/json",
+        };
+
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+
+        // Call logout endpoint (POST now instead of GET)
+        console.log("Calling /logout endpoint...");
+        const res = await fetch("http://localhost:5000/logout", {
+          method: "POST",
+          credentials: "include", // Important: sends cookies
+          headers: headers,
         });
 
-        navigate("/login");
+        const data = await res.json();
+        console.log("✓ Server response:", data);
+
+        // Clear token from localStorage
+        localStorage.removeItem("token");
+        console.log("✓ Cleared localStorage token");
+        console.log(
+          "Verification - token in localStorage after clear:",
+          localStorage.getItem("token")
+            ? "STILL EXISTS!"
+            : "completely removed",
+        );
+
+        // Small delay to ensure server processed the request
+        setTimeout(() => {
+          console.log("Redirecting to /login");
+          navigate("/login");
+        }, 300);
       } catch (err) {
-        console.log(err);
+        console.error("Logout error:", err);
+        // Clear localStorage anyway
+        localStorage.removeItem("token");
         navigate("/login");
       }
     };

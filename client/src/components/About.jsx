@@ -4,40 +4,80 @@ import { useNavigate } from "react-router-dom";
 export default function About() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const callAboutPage = async () => {
     try {
-      // Get token from localStorage (fallback if not in localStorage, cookie will be used)
-      const token = localStorage.getItem("token");
+      setLoading(true);
+
+      // Get token from localStorage first (for cross-subdomain SSO)
+      let token = localStorage.getItem("token");
+      console.log(
+        "About: Token in localStorage:",
+        token ? "exists" : "missing",
+      );
+
+      // If no localStorage token, try to get from cookie via endpoint
+      if (!token) {
+        console.log(
+          "About: No localStorage token, attempting to sync from cookie...",
+        );
+        try {
+          const syncRes = await fetch(
+            "http://localhost:5000/get-cookie-token",
+            {
+              method: "GET",
+              credentials: "include",
+            },
+          );
+
+          if (syncRes.status === 200) {
+            const syncData = await syncRes.json();
+            token = syncData.token;
+            console.log("About: Successfully retrieved token from cookie");
+            localStorage.setItem("token", token);
+          }
+        } catch (syncErr) {
+          console.log("About: Could not sync token from cookie:", syncErr);
+        }
+      }
 
       const headers = {
         Accept: "application/json",
         "Content-Type": "application/json",
       };
 
-      // Always include Authorization header if token exists
+      // Use Authorization header (works across subdomains)
       if (token) {
         headers.Authorization = `Bearer ${token}`;
+        console.log("About: Sending Authorization header");
       }
 
-      // Send request with both cookie + Authorization header for maximum compatibility
       const res = await fetch("http://localhost:5000/check-auth", {
         method: "GET",
         headers: headers,
-        credentials: "include", // Also sends cookie if available
+        credentials: "include",
       });
 
       const responseData = await res.json();
-      console.log("Auth response:", responseData);
+      console.log("About: Auth response status:", res.status);
 
       if (res.status === 200) {
+        console.log("About: Authentication successful, showing user data");
         setUserData(responseData.user);
+        setLoading(false);
       } else {
-        console.log("Auth failed:", responseData);
+        console.log(
+          "About: Authentication failed, clearing token and redirecting",
+        );
+        localStorage.removeItem("token");
+        setLoading(false);
         navigate("/login");
       }
     } catch (err) {
-      console.log("Error:", err);
+      console.log("About: Error:", err);
+      localStorage.removeItem("token");
+      setLoading(false);
       navigate("/login");
     }
   };
